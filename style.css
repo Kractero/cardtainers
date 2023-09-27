@@ -1,0 +1,22 @@
+.main {
+    display: flex; 
+    flex-direction: column; 
+    place-items: center; 
+    padding: 1rem;
+    align-items: center;
+    max-width: 315px;
+}
+
+h1 {
+    font-weight: 500; 
+    font-size: 1.875rem; 
+    line-height: 2.25rem; 
+}
+
+#slogan {
+    padding: 0;
+}
+
+h2 {
+    margin-bottom: 0px;
+}
