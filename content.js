@@ -1,4 +1,4 @@
-const puppets = ["Wheatinsline", "Tanka", "Booslick"]
+const puppets = ["Wheatinsline", "Tanka", "Booslick", "Santalla", "Rell"]
 let myPort = browser.runtime.connect({ name: "port-from-cs" });
 
 for ( let i = 0; i < puppets.length; i++) {

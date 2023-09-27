@@ -1,67 +1,50 @@
-// const puppets = ["Wheatinsline", "Tanka"]
+let nsPuppetShow;
 
-// console.log("loaded")
-// puppets.forEach(puppet => {
-//   console.log(browser.tabs.current)
-// });
+async function createContainer(name) {
+  try {
+    const find = await browser.contextualIdentities.query({ name });
+    if (find.length === 0) {
+      return await browser.contextualIdentities.create({
+        name,
+        icon: "fingerprint",
+        color: "pink",
+      });
+    } else {
+      return find[0];
+    }
+  } catch (error) {
+    console.error("Error creating or finding contextual identity:", error);
+    throw error;
+  }
+}
 
-// document.querySelector('#test').addEventListener('click', async () => {
-//     browser.tabs.query({ currentWindow: true }).then((tabs) => {
-//         for (const tab of tabs) {
-//           if (tab.active) {
-//             if (tab.url.includes("/nation=wheatinsline")) {
-//                 console.log("WHEAT DETECTED!")
-//             }
-//           }
-//         }
-//       });
-//     const contextualIdentity = await browser.contextualIdentities.create({
-//         name: "Container",
-//         icon: "fingerprint",
-//         color: "pink",
-//     });
-//     console.log(contextualIdentity)
-// })
-
-// browser.runtime.onMessage.addListener(notify);
-
-// function notify(message) {
-//   browser.notifications.create({
-//     type: "basic",
-//     iconUrl: browser.extension.getURL("link.png"),
-//     title: "You clicked a link!",
-//     message: message.url,
-//   });
-// }
-
-let portFromCS;
+async function createNewTabInContainer(url, cookieStoreId) {
+  try {
+    const activeTab = (await browser.tabs.query({ active: true }))[0];
+    if (activeTab && activeTab.cookieStoreId === cookieStoreId) {
+      return;
+    }
+    await browser.tabs.remove(activeTab.id)
+    await browser.tabs.create({ url, cookieStoreId });
+  } catch (error) {
+    console.error("Error creating tab:", error);
+    throw error;
+  }
+}
 
 function connected(p) {
-  portFromCS = p;
-  portFromCS.postMessage({ greeting: "hi there content script!" });
-  portFromCS.onMessage.addListener(async (m) => {
-    const find = await browser.contextualIdentities
-      .query({
-        name: m,
-      }
-    )
-    const activeTab = await browser.tabs.query({ active: true })
+  nsPuppetShow = p;
+  nsPuppetShow.postMessage({ greeting: "hi there content script!" });
+  nsPuppetShow.onMessage.addListener(async (message) => {
+    const name = message;
+    const activeTab = (await browser.tabs.query({ active: true }))[0];
+
     if (activeTab) {
-      if (find.length === 0) {
-        const contextualIdentity = await browser.contextualIdentities.create({
-          name: m,
-          icon: "fingerprint",
-          color: "pink",
-        });
-        const todd = await browser.tabs.create({
-          url: activeTab[0].url,
-          cookieStoreId: contextualIdentity.cookieStoreId,
-        });
-      } else {
-        const todd = await browser.tabs.create({
-          url: activeTab[0].url,
-          cookieStoreId: find.cookieStoreId,
-        });
+      try {
+        const contextualIdentity = await createContainer(name);
+        await createNewTabInContainer(activeTab.url, contextualIdentity.cookieStoreId);
+      } catch (error) {
+        console.error("Error handling message:", error);
       }
     }
   });
