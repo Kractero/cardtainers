@@ -1,31 +1,35 @@
 {
-    "manifest_version": 3,
-    "name": "Auto Containers",
-    "description": "Testing",
-    "version": "0.01",
-    "permissions": [
-        "contextualIdentities",
-        "tabs",
-        "<all_urls>"
-    ],
-    "browser_specific_settings": {
-      "gecko": {
-        "id": "kractero@sideroca.com"
-      }
-    },
-    "background": {
-        "scripts": ["index.js"]
-    },
-    "icons": {
-      "48": "icon.png",
-      "96": "icon@2x.png"
-    },
-    "action": {
-      "default_icon": {
-        "48": "icon.png",
-        "96": "icon@2x.png"
-      },
-      "default_popup": "index.html"
+  "manifest_version": 3,
+  "name": "Auto Containers",
+  "version": "0.01",
+  "description": "Testing",
+  "permissions": [
+    "activeTab",
+    "contextualIdentities",
+    "tabs",
+    "<all_urls>",
+    "cookies"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
     }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["index.js"]
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
-  
+}
