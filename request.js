@@ -1,10 +1,13 @@
+const colors = ["blue", "turquoise", "green", "yellow", "orange", "red", "pink", "purple", "toolbar"];
+const icons = ["fingerprint", "briefcase", "dollar", "cart", "circle", "gift", "vacation", "food", "fruit", "pet", "tree", "chill", "fence"];
+
 browser.webRequest.onBeforeRequest.addListener(
-    async function (details) {
+    async function (request) {
         let puppets = await browser.storage.local.get("puppets")
         if (puppets && puppets.puppets) {
-            puppets = JSON.parse(puppets.puppets).split('\n').map(puppet => puppet.toLowerCase().replace(" ", "_"))
+            puppets = JSON.parse(puppets.puppets).split('\n')
         }
-        let url = details.url;
+        let url = request.url;
         if (url.includes("nation") || url.includes("container")) {
             const parameter = () => {
                 const parsedURL = new URL(url);
@@ -19,16 +22,17 @@ browser.webRequest.onBeforeRequest.addListener(
                 }
                 return parameters.container || parameters.nation
             }
-            if (puppets.includes(parameter())) {
-                const cookieStoreId = await createContainer(parameter());
-                if (details.cookieStoreId === cookieStoreId) return;
-                await createNewTabInContainer(url, cookieStoreId );
-                return {};
+            const index = puppets.findIndex((puppet) => puppet.toLowerCase().replaceAll(" ", "_") === parameter());
+            if (index !== -1) {
+              const cookieStoreId = await createContainer(puppets[index]);
+              if (request.cookieStoreId === cookieStoreId) return;
+              await createNewTabInContainer(url, cookieStoreId );
+              return {};
             }
         }
       return {};
     },
-    { urls: ["<all_urls>"], types: ['main_frame'] },
+    { urls: ["*://www.nationstates.net/*"], types: ['main_frame'] },
     ["blocking"]
   );
 
@@ -36,12 +40,14 @@ async function createContainer(name) {
     try {
       const find = await browser.contextualIdentities.query({ name });
       if (find.length === 0) {
-        const lass= await browser.contextualIdentities.create({
+        const randomIcon = icons[Math.floor(Math.random() * icons.length)]
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        const container= await browser.contextualIdentities.create({
             name,
-            icon: "fingerprint",
-            color: "pink",
+            icon: randomIcon,
+            color: randomColor,
           })
-        return lass.cookieStoreId;
+        return container.cookieStoreId;
       } else {
         return find[0].cookieStoreId;
       }
@@ -57,8 +63,8 @@ async function createContainer(name) {
       if (activeTab && activeTab.cookieStoreId === cookieStoreId) {
         return;
       }
-      await browser.tabs.remove(activeTab.id)
       await browser.tabs.create({ url, cookieStoreId });
+      await browser.tabs.remove(activeTab.id)
     } catch (error) {
       console.error("Error creating tab:", error);
       throw error;
