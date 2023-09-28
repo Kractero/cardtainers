@@ -13,14 +13,6 @@ h1 {
     line-height: 2.25rem; 
 }
 
-#slogan {
-    padding: 0;
-}
-
-h2 {
-    margin-bottom: 0px;
-}
-
 form {
     display: flex;
     justify-content: center;
