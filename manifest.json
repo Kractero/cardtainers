@@ -1,7 +1,7 @@
 {
-  "manifest_version": 3,
-  "name": "Auto Containers",
-  "version": "1.0",
+  "manifest_version": 2,
+  "name": "Cardtainers",
+  "version": "1.2",
   "description": "Testing",
   "permissions": [
     "contextualIdentities",
@@ -9,25 +9,23 @@
     "cookies",
     "storage",
     "webRequest",
-    "webRequestBlocking"
+    "webRequestBlocking",
+    "*://nationstates.net/*"
   ],
-  "action": {
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "Cardtainers@Kractero"
+    }
+  },
+  "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
+      "48": "icon.png"
     }
   },
   "icons": {
     "48": "icon.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["*://*.nationstates.net/*"],
-      "js": ["content.js"]
-    }
-  ],
   "background": {
     "scripts": ["index.js", "request.js"]
   }

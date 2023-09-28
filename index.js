@@ -1,6 +1,6 @@
 window.addEventListener('load', async () => {
   let puppets = await browser.storage.local.get("puppets")
-  if (puppets) {
+  if (puppets && puppets.puppets) {
     document.querySelector('#puppets').value = JSON.parse(puppets.puppets)
   }
   document.querySelector('#puppetsform').addEventListener('submit',  async (e) => {

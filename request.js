@@ -1,9 +1,7 @@
-const puppetsList = browser.storage.local.get("puppets")
-
 browser.webRequest.onBeforeRequest.addListener(
     async function (details) {
         let puppets = await browser.storage.local.get("puppets")
-        if (puppetsList) {
+        if (puppets && puppets.puppets) {
             puppets = JSON.parse(puppets.puppets).split('\n').map(puppet => puppet.toLowerCase().replace(" ", "_"))
         }
         let url = details.url;
