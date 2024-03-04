@@ -32,7 +32,7 @@ browser.webRequest.onBeforeRequest.addListener(
         }
       return {};
     },
-    { urls: ["*://www.nationstates.net/*"], types: ['main_frame'] },
+    { urls: ["*://*.nationstates.net/*"], types: ['main_frame'] },
     ["blocking"]
   );
 
@@ -56,7 +56,7 @@ async function createContainer(name) {
       throw error;
     }
   }
-  
+
   async function createNewTabInContainer(url, cookieStoreId) {
     try {
       const activeTab = (await browser.tabs.query({ active: true }))[0];
