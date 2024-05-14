@@ -26,7 +26,7 @@ browser.webRequest.onBeforeRequest.addListener(
             if (index !== -1) {
               const cookieStoreId = await createContainer(puppets[index]);
               if (request.cookieStoreId === cookieStoreId) return;
-              await createNewTabInContainer(url, cookieStoreId );
+              await createNewTabInContainer(url, cookieStoreId, request.tabId );
               return {};
             }
         }
@@ -57,14 +57,16 @@ async function createContainer(name) {
     }
   }
 
-  async function createNewTabInContainer(url, cookieStoreId) {
+  async function createNewTabInContainer(url, cookieStoreId, originalTabId) {
     try {
       const activeTab = (await browser.tabs.query({ active: true }))[0];
       if (activeTab && activeTab.cookieStoreId === cookieStoreId) {
         return;
       }
-      await browser.tabs.create({ url, cookieStoreId });
-      await browser.tabs.remove(activeTab.id)
+      await browser.tabs.create({ url, cookieStoreId, active: false });
+      if (originalTabId) {
+          await browser.tabs.remove(originalTabId);
+      }
     } catch (error) {
       console.error("Error creating tab:", error);
       throw error;
