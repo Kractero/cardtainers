@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Cardtainers",
-  "version": "1.13",
+  "version": "1.15",
   "description": "An experimental way to generate containers for the NationStates trading cards game.",
   "permissions": [
     "contextualIdentities",
