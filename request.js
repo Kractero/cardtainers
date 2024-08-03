@@ -1,4 +1,4 @@
-const colors = ["blue", "turquoise", "green", "yellow", "orange", "red", "pink", "purple", "toolbar"];
+const colors = ["blue", "turquoise", "green", "yellow", "orange", "red", "pink", "purple"];
 const icons = ["fingerprint", "briefcase", "dollar", "cart", "circle", "gift", "vacation", "food", "fruit", "pet", "tree", "chill", "fence"];
 
 browser.webRequest.onBeforeRequest.addListener(
