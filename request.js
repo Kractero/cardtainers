@@ -10,17 +10,9 @@ browser.webRequest.onBeforeRequest.addListener(
         let url = request.url;
         if (url.includes("nation") || url.includes("container")) {
             const parameter = () => {
-                const parsedURL = new URL(url);
-                const pathname = parsedURL.pathname;
-                const segments = pathname.split('/').filter(segment => segment !== '');
-                const parameters = {};
-                for (const segment of segments) {
-                    const [key, value] = segment.split('=');
-                    if (key && value) {
-                        parameters[key] = value;
-                    }
-                }
-                return parameters.container || parameters.nation;
+                const nation = url.match(/nation=([^\/]*)/) ? url.match(/nation=([^\/]*)/)[1] : '';
+                const container = url.match(/container=([^\/]*)/) ? url.match(/nation=([^\/]*)/)[1] : '';
+                return nation.toLowerCase().replaceAll('%20', '_') || container.toLowerCase().replaceAll('%20', '_');
             };
             const index = puppets.findIndex((puppet) => puppet.toLowerCase().replaceAll(" ", "_") === parameter());
             if (index !== -1) {
