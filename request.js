@@ -10,11 +10,19 @@ browser.webRequest.onBeforeRequest.addListener(
         let url = request.url;
         if (url.includes("nation") || url.includes("container")) {
             const parameter = () => {
-                const nation = url.match(/nation=([^\/]*)/) ? url.match(/nation=([^\/]*)/)[1] : '';
-                const container = url.match(/container=([^\/]*)/) ? url.match(/nation=([^\/]*)/)[1] : '';
-                return nation.toLowerCase().replaceAll('%20', '_') || container.toLowerCase().replaceAll('%20', '_');
+                const parsedURL = new URL(url);
+                const pathname = parsedURL.pathname;
+                const segments = pathname.split('/').filter(segment => segment !== '');
+                const parameters = {};
+                for (const segment of segments) {
+                    const [key, value] = segment.split('=');
+                    if (key && value) {
+                        parameters[key] = value;
+                    }
+                }
+                return parameters.container || parameters.nation;
             };
-            const index = puppets.findIndex((puppet) => puppet.toLowerCase().replaceAll(" ", "_") === parameter());
+            const index = puppets.findIndex((puppet) => puppet.toLowerCase().replaceAll(" ", "_") === parameter().toLowerCase().replaceAll('%20', '_'));
             if (index !== -1) {
                 const cookieStoreId = await createContainer(puppets[index]);
                 if (request.cookieStoreId === cookieStoreId) return;
@@ -51,12 +59,13 @@ async function createContainer(name) {
 
 async function createNewTabInContainer(url, cookieStoreId, originalTabId) {
     try {
+        let tabs = await browser.tabs.query({ active: true, currentWindow: true });
         const originalTab = await browser.tabs.get(originalTabId);
         await browser.tabs.create({
             url,
             cookieStoreId,
             index: originalTab.index,
-            active: false
+            active: tabs[0] && tabs[0].index == originalTab.index ? true : false
         });
         await browser.tabs.remove(originalTabId);
     } catch (error) {
